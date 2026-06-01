@@ -1464,7 +1464,7 @@
                 </div>
 
               </div>
-
+              <input type="hidden" name="_redirect" value="https://github.io">
               <button type="submit" class="btn btn-primary form-submit">Send My Order Request 🎂</button>
               <div class="form-msg" id="formMsg">
                 🎉 Thank you! We will contact you soon regarding your cake order.
@@ -1537,7 +1537,7 @@
        JAVASCRIPT
   ============================== -->
   <script>
-    // ---- Navbar scroll effect ----
+  // ---- Navbar scroll effect ----
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 40);
@@ -1579,9 +1579,9 @@
 
     // ---- Form validation & submission ----
     const form = document.getElementById('orderForm');
-    const formMsg = document.getElementById('formMsg');
 
     form.addEventListener('submit', function (e) {
+      // 1. Temporarily pause submission to check fields
       e.preventDefault();
       let valid = true;
 
@@ -1590,15 +1590,15 @@
 
       // Validate required fields
       const required = [
-        { id: 'name',      label: 'Full Name' },
-        { id: 'email',     label: 'Email Address' },
-        { id: 'eventDate', label: 'Event Date' },
-        { id: 'cakeType',  label: 'Cake Type' },
+        { id: 'name' },
+        { id: 'email' },
+        { id: 'eventDate' },
+        { id: 'cakeType' },
       ];
 
       required.forEach(({ id }) => {
         const el = document.getElementById(id);
-        if (!el.value.trim()) {
+        if (!el || !el.value.trim()) {
           el.classList.add('error');
           valid = false;
         }
@@ -1611,6 +1611,7 @@
         valid = false;
       }
 
+      // 2. If it's NOT valid, stop here and focus the error field
       if (!valid) {
         const firstError = form.querySelector('.form-control.error');
         firstError?.focus();
@@ -1618,24 +1619,8 @@
         return;
       }
 
-      // Submit to Airform
-      const data = new FormData(form);
-      fetch(form.action, {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      })
-      .then(() => {
-        formMsg.classList.add('visible');
-        form.reset();
-        formMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      })
-      .catch(() => {
-        // Fallback: show success even if fetch fails (Airform handles redirect)
-        formMsg.classList.add('visible');
-        form.reset();
-        formMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
+      // 3. If it IS valid, bypass the freeze and force send to Airform!
+      form.submit();
     });
 
     // ---- Smooth anchor scrolling offset for fixed nav ----
